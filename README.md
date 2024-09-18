@@ -1,2 +1,2 @@
-# prognosticator
-Prognosticator is a hierarchical Bayesian Two Layer Perceptron Model
+# Two-Layer Perceptron Regression Model
+TLP Regression Model is a hierarchical Bayesian Two Layer Perceptron Model.
