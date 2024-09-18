@@ -13,25 +13,9 @@ from examples.load_data import normalized_weekly_store_category_household_sales
 df = normalized_weekly_store_category_household_sales()
 
 # %%
-def create_lagged_features(df, time_series_columns, context_length, forecast_horizon, seasonality_period):
-    """Create lagged features for a given column in the DataFrame, with future targets."""
-    
-    X = pd.DataFrame()
-    y = pd.DataFrame()
-    
-    data_min = df.min()
-    data_max = df.max()
-    
-    for column_name in time_series_columns:
-        for i in range(context_length, -1, -1):
-            X[f'lag_{column_name}_{i}'] = (df[column_name].shift(i)-data_min[column_name])/(data_max[column_name]-data_min[column_name])
-        
-        for i in range(1, forecast_horizon + 1):
-            y[f'target_{column_name}_{i}'] = (df[column_name].shift(-i)-data_min[column_name])/(data_max[column_name]-data_min[column_name])
-    X['time_sine'] = np.sin(2*np.pi*X.index/seasonality_period)
-    X.dropna(inplace=True)  # Remove rows with NaN values due to shifting
-    y.dropna(inplace=True)  # Remove rows with NaN values due to shifting
-    return X.iloc[:-forecast_horizon], y.iloc[context_length:]
+
+from src.utils import create_lagged_features
+
 
 # Parameters
 context_length = 35  # Number of lagged time steps to use as features
@@ -76,7 +60,6 @@ from src.tlp_regression_model import TlpRegressionModel
 model_name = "TlpRegressionModel"
 version = "v0.1"
 
-# Sorcerer
 sampler_config = {
     "draws": 200,
     "tune": 100,
