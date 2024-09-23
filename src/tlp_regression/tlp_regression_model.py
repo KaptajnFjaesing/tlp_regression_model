@@ -24,10 +24,7 @@ from tlp_regression.config import (
 from tlp_regression.model_components import (
     swish
 )
-from tlp_regression.utils import (
-    generate_hash_id,
-    get_version_from_pyproject
-    )
+from tlp_regression.utils import generate_hash_id 
 
 
 class TlpRegressionModel:
@@ -36,6 +33,7 @@ class TlpRegressionModel:
         self,
         model_config: dict | None = None,
         model_name: str = "TlpRegressionModel"
+        model_version: str = None
         ):
         self.sampler_config = None
         self.model_config = (get_default_model_config() if model_config is None else model_config)  # parameters for priors, etc.
@@ -43,7 +41,7 @@ class TlpRegressionModel:
         self.idata: az.InferenceData | None = None  # idata is generated during fitting
         self.posterior_predictive: az.InferenceData
         self.model_name = model_name
-        self.version = get_version_from_pyproject()
+        self.model_version = model_version
         self.map_estimate = None
         self.logger = logging.getLogger("pymc")
 
@@ -118,7 +116,7 @@ class TlpRegressionModel:
             raise RuntimeError("No idata provided to set attrs on.")
         idata.attrs["id"] = self.id
         idata.attrs["model_name"] = self.model_name
-        idata.attrs["version"] = self.version
+        idata.attrs["model_version"] = self.model_version
         idata.attrs["sampler_config"] = serialize_model_config(self.sampler_config)
         idata.attrs["model_config"] = serialize_model_config(self._serializable_model_config)
         return idata
@@ -147,7 +145,7 @@ class TlpRegressionModel:
 
     @property
     def id(self) -> str:
-        return generate_hash_id(self.model_config, self.version, self.model_name)
+        return generate_hash_id(self.model_config, self.model_version, self.model_name)
 
     @property
     def output_var(self):
