@@ -41,7 +41,8 @@ def get_default_sampler_config() -> Dict:
         "chains": 1,
         "cores": 1,
         "sampler": "NUTS",
-        "nuts_sampler": "pymc"
+        "nuts_sampler": "pymc",
+        "verbose": True
     }
     return sampler_config
 
