@@ -10,6 +10,7 @@ from typing import (
     Dict, 
     Union
     )
+import tomllib
 
 def generate_hash_id(
     model_config: Dict[str, Union[int, float, Dict]],
@@ -40,3 +41,8 @@ def generate_hash_id(
     # Generate a unique hash ID
     hash_id = hashlib.md5(hash_input.encode()).hexdigest()
     return hash_id
+
+def get_version_from_pyproject():
+    with open("../pyproject.toml", 'rb') as f:
+        pyproject_data = tomllib.load(f)
+        return pyproject_data['tool']['poetry']['version']

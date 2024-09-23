@@ -25,7 +25,8 @@ from tlp_regression.model_components import (
     swish
 )
 from tlp_regression.utils import (
-    generate_hash_id
+    generate_hash_id,
+    get_version_from_pyproject
     )
 
 
@@ -34,16 +35,15 @@ class TlpRegressionModel:
     def __init__(
         self,
         model_config: dict | None = None,
-        model_name: str = "TlpRegressionModel",
-        version: str = None
-    ):
+        model_name: str = "TlpRegressionModel"
+        ):
         self.sampler_config = None
         self.model_config = (get_default_model_config() if model_config is None else model_config)  # parameters for priors, etc.
         self.model = None  # Set by build_model
         self.idata: az.InferenceData | None = None  # idata is generated during fitting
         self.posterior_predictive: az.InferenceData
         self.model_name = model_name
-        self.version = version
+        self.version = get_version_from_pyproject()
         self.map_estimate = None
         self.logger = logging.getLogger("pymc")
 
