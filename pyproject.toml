@@ -5,7 +5,7 @@ description = "A Bayesian hierarchical model for time series forecasting"
 authors = ["Jonas Petersen"]
 readme = ["README.md"]
 repository = "https://github.com/KaptajnFjaesing/tlp_regression_model"
-packages = [{include = "tlp_regression_model", from = "src" }]
+packages = [{include = "tlp_regression", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.11.8,<3.13"
