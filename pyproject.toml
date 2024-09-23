@@ -1,0 +1,23 @@
+[tool.poetry]
+name = "tlp_regression_model"
+version = "0.1.0"
+description = "A Bayesian hierarchical model for time series forecasting"
+authors = ["Jonas Petersen"]
+readme = ["README.md"]
+repository = "https://github.com/KaptajnFjaesing/tlp_regression_model"
+packages = [{include = "tlp_regression_model", from = "src" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11.8,<3.13"
+pymc = "^5.10.4"
+numpy = "^1.26.4"
+pandas = "^2.2.1"
+arviz = "0.19.0"
+pytensor = "^2.11.2"
+typing-extensions = "^4.7.1"
+spyder-kernels = "2.5"
+
+
+[build-system]
+requires = ["setuptools", "wheel", "poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -7,14 +7,14 @@ Created on Wed Sep 18 12:23:09 2024
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
-from examples.load_data import normalized_weekly_store_category_household_sales
+from examples.load_data import load_m5_weekly_store_category_sales_data
 
-df = normalized_weekly_store_category_household_sales()
+_,df,_ = load_m5_weekly_store_category_sales_data()
 
 # %% Define model
 
-from src.utils import create_lagged_features
-from src.tlp_regression_model import TlpRegressionModel
+from src.TlpRegressionModel.utils import create_lagged_features
+from src.TlpRegressionModel.tlp_regression_model import TlpRegressionModel
 
 
 model_name = "TlpRegressionModel"
@@ -49,9 +49,6 @@ model_config = {
     "n_hidden_layer2": 5
 }
 
-if sampler_config['sampler'] == "MAP":
-    model_config['precision_alpha_prior'] = 100
-    model_config['precision_beta_prior'] = 0.001
 
 prognosticator = TlpRegressionModel(
     model_config = model_config,
