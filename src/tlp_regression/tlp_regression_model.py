@@ -32,7 +32,7 @@ class TlpRegressionModel:
     def __init__(
         self,
         model_config: dict | None = None,
-        model_name: str = "TlpRegressionModel"
+        model_name: str = "TlpRegressionModel",
         model_version: str = None
         ):
         self.sampler_config = None
