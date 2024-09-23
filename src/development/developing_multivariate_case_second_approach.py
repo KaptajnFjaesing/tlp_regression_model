@@ -16,7 +16,7 @@ _,df,_ = load_m5_weekly_store_category_sales_data()
 from tlp_regression.tlp_regression_model import TlpRegressionModel
 
 model_name = "TlpRegressionModel"
-version = "v0.2"
+model_version = "v0.2"
 
 sampler_config = {
     "draws": 200,
@@ -24,7 +24,8 @@ sampler_config = {
     "chains": 1,
     "cores": 1,
     "sampler": "NUTS",
-    "nuts_sampler": "numpyro"
+    "nuts_sampler": "numpyro",
+    "verbose": True
 }
 
 base_alpha = 2
@@ -53,25 +54,33 @@ model_config = {
 
 tlp_regression_model = TlpRegressionModel(
     model_config = model_config,
-    sampler_config = sampler_config,
     model_name = model_name,
-    version = version
+    model_version = model_version
     )
 
 
-# %%
+#%%
+
+from contextlib import redirect_stdout, redirect_stderr
+from io import StringIO
+
+def suppress_output(func, *args, **kwargs):
+    f = StringIO()
+    with redirect_stdout(f), redirect_stderr(f):
+        result = func(*args, **kwargs)
+    return result
 
 number_of_weeks_in_a_year = 52.1429
 number_of_months = 12
-number_of_quaters = 4
+number_of_quarters = 4
 
 
 time_series_columns = [x for x in df.columns if not 'date' in x]
 df_time_series = df.copy(deep = True)
 
-df_time_series['week'] = np.sin(2*np.pi*df_time_series['date'].dt.strftime('%U').astype(int)/number_of_weeks_in_a_year)
-df_time_series["month"] = np.sin(2*np.pi*df_time_series["date"].dt.month/number_of_months)
-df_time_series["quarter"] = np.sin(2*np.pi*df_time_series["date"].dt.quarter/number_of_quaters)
+df_time_series.loc[:, 'week'] = np.sin(2*np.pi*df_time_series['date'].dt.strftime('%U').astype(int)/number_of_weeks_in_a_year)
+df_time_series.loc[:, "month"] = np.sin(2*np.pi*df_time_series["date"].dt.month/number_of_months)
+df_time_series.loc[:, "quarter"] = np.sin(2*np.pi*df_time_series["date"].dt.quarter/number_of_quarters)
 
 
 fh = 30
@@ -81,8 +90,10 @@ test_data = df_time_series.iloc[-fh:]
 
 x_training_min = training_data["date"].dt.year.min()
 x_training_max = training_data["date"].dt.year.max()
-training_data["year"] = (training_data["date"].dt.year-x_training_min)/(x_training_max-x_training_min)
-test_data["year"] = (test_data["date"].dt.year-x_training_min)/(x_training_max-x_training_min)
+
+training_data.loc[:, "year"] = (training_data["date"].dt.year - x_training_min) / (x_training_max - x_training_min)
+test_data.loc[:, "year"] = (test_data["date"].dt.year - x_training_min) / (x_training_max - x_training_min)
+
 
 y_training_min = training_data[time_series_columns].min()
 y_training_max = training_data[time_series_columns].max()
@@ -91,6 +102,18 @@ y_train = ((training_data[time_series_columns]-y_training_min)/(y_training_max-y
 
 x_test = test_data[["week", "month", "quarter", "year"]].values
 y_test = ((test_data[time_series_columns]-y_training_min)/(y_training_max-y_training_min)).values
+
+
+tlp_regression_model.fit(X = x_train, y = y_train, sampler_config = sampler_config)
+
+
+#%%
+
+suppress_output(tlp_regression_model.fit, X = x_train, y = y_train, sampler_config = sampler_config)
+
+# %%
+
+
 
 tlp_regression_model.fit(
     X = x_train,
